@@ -21,7 +21,7 @@ const App = () => (
     <BrowserRouter>
       <div>
         <Sidebar/>
-        <div className="container" style={{marginLeft: "280px"}}>
+        <div style={{marginLeft: "280px", padding: "25px"}}>
           <Routes>
             <Route path = {routes.HOME} element={<Home/>}/>
             <Route path = {routes.GENERATION} element={<Generation/>} exact/>
