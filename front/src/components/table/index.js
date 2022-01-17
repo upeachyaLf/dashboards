@@ -7,7 +7,7 @@ export default function CustomTable (props) {
 	const { table_data } = props;
 
 	return (
-		<Table striped bordered hover>
+		<Table>
 				<thead>
 					<tr>
 						{table_data.header.map((header, i) => {

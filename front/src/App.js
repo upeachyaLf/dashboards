@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route} from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/overrides.css';
+import './styles/global.css';
 
 import Sidebar from './components/sidebar';
 
@@ -21,7 +22,12 @@ const App = () => (
     <BrowserRouter>
       <div>
         <Sidebar/>
-        <div style={{marginLeft: "280px", padding: "25px"}}>
+        <div style={{
+          marginLeft: "280px",
+          padding: "25px",
+          minHeight: "100vh",
+          background: "#eceef0",
+        }}>
           <Routes>
             <Route path = {routes.HOME} element={<Home/>}/>
             <Route path = {routes.GENERATION} element={<Generation/>} exact/>

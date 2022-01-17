@@ -1,0 +1,18 @@
+h3 {
+	font-weight: 500;
+	color: #3d5170;
+	font-size: 24px;
+}
+
+h6 {
+	font-weight: 500;
+	color: #3d5170;
+	font-size: 18px;
+}
+
+.card-with-shadow {
+	width: fit-content;
+	background: white;
+	border-radius: 15px;
+	box-shadow: 0 2px 0 rgb(90 97 105 / 11%), 0 4px 8px rgb(90 97 105 / 12%), 0 10px 10px rgb(90 97 105 / 6%), 0 7px 70px rgb(90 97 105 / 10%);
+}
