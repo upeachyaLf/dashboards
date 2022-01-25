@@ -1,14 +1,9 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useEffect, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 import Table from '../../components/table';
-
-const table_data = {
-	header: [{ text: "#" }, { text: "First Name" }, { text: "Last Name" }, { text: "User Name" }],
-	body: [
-		[{ text: 1 }, { text: "Mark" }, { text: "Otto" }, { text: "@mdo" }],
-		[{ text: 2 }, { text: "Jacob" }, { text: "Thornton" }, { text: "@fat" }]
-	]
-}
+import tableResolver from '../../resolvers/table';
+import BACKEND_URL from '../../constants/backend_url';
 
 const linechart_data = [
 	{
@@ -56,6 +51,28 @@ const linechart_data = [
 ];
 
 export default function Generation() {
+	const default_table = {
+		header: [{ text: "Voltage" }, { text: "Current" }, { text: "Power" }, {text: "Energy"}, {text: "Date/Time"}],
+		body: []
+	}
+
+	const [table_data, setTableData] = useState(default_table);
+
+	useEffect(()=> {
+		let url = `${BACKEND_URL}?api_key=0123456789gad&table_name=u1_generation`;
+		
+		fetch(url).then((response) => response.json())
+			.then((json) => {
+				const data = {
+					header: [ { text: "Voltage" }, { text: "Current" }, { text: "Power" }, {text: "Energy"}, {text: "Date/Time"}],
+					body: tableResolver(json)
+				}
+				 setTableData(data)
+			}).catch (error => {
+			console.log("ERROR==>", error);
+		})
+	},[])
+
 	return (
 		<>
 			<h3 style={{marginBottom: "24px"}}>GENERATION</h3>
