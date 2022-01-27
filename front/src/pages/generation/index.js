@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +9,8 @@ import Table from '../../components/table';
 import tableResolver from '../../resolvers/table';
 import powerChartResolver from '../../resolvers/power_chart';
 import BACKEND_URL from '../../constants/backend_url';
+
+import mock from '../../mock/generation';
 
 export default function Generation() {
 	const default_table = {
@@ -34,6 +36,13 @@ export default function Generation() {
 	}, [])
 
 	const fetchData = () => {
+		const data = {
+			header: [{ text: "S No." }, { text: "Voltage" }, { text: "Current" }, { text: "Power" }, { text: "Energy" }, { text: "Date/Time" }],
+			body: tableResolver(mock)
+		}
+		setTableData(data)
+		setPowerChartData(powerChartResolver(mock))
+
 		const url = `${BACKEND_URL}?api_key=0123456789gad&table_name=u1_generation`;
 		fetch(url).then((response) => response.json())
 			.then((json) => {
@@ -139,7 +148,7 @@ export default function Generation() {
 				<hr />
 				<div style={{ padding: "16px", width: "100%" }}>
 					<ResponsiveContainer width="100%" height={500}>
-						<LineChart
+						<AreaChart
 							data={power_chart_data}
 							margin={{
 								top: 5,
@@ -153,8 +162,8 @@ export default function Generation() {
 							<YAxis />
 							<Tooltip />
 							<Legend />
-							<Line type="monotone" dataKey="power" label="Power" stroke="#8884d8" activeDot={{ r: 2 }} />
-						</LineChart>
+							<Area type="monotone" dataKey="power" label="Power" stroke="#8884d8" fill="#8884d8" />
+						</AreaChart>
 					</ResponsiveContainer>
 				</div>
 			</div>

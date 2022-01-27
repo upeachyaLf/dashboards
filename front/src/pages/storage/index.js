@@ -1,74 +1,120 @@
-import { PieChart, Pie } from 'recharts';
-import { Row, Col} from 'react-bootstrap'
 
-const data_one = {
-	title: "Pie chart one",
-	data: [
-		{ name: 'Group A', value: 400 },
-		{ name: 'Group B', value: 300 },
-		{ name: 'Group C', value: 300 },
-		{ name: 'Group D', value: 200 },
-		{ name: 'Group E', value: 278 },
-		{ name: 'Group F', value: 189 },
-	]
-}
+import { useState, useEffect } from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/esm/Col';
+import {
+	PieChart,
+	Pie,
+	Cell,
+	ResponsiveContainer,
+	AreaChart,
+	Area,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	Legend,
+} from 'recharts';
 
-const data_two = {
-	title: "Pie chart two",
-	data: [
-		{ name: 'Group A', value: 400 },
-		{ name: 'Group B', value: 300 },
-		{ name: 'Group C', value: 300 },
-		{ name: 'Group D', value: 200 },
-		{ name: 'Group E', value: 278 },
-		{ name: 'Group F', value: 189 },
-	]
-};
+import Table from '../../components/table';
+import { storageTableResolver } from '../../resolvers/table';
+import energyFlowChartResolver from '../../resolvers/energy_flow_chart';
+import socPieChartResolver from '../../resolvers/soc_pie_chart';
 
-const data_three = {
-	title: "Pie chart three",
-	data: [
-		{ name: 'Group A', value: 400 },
-		{ name: 'Group B', value: 300 },
-		{ name: 'Group C', value: 300 },
-		{ name: 'Group D', value: 200 },
-		{ name: 'Group E', value: 278 },
-		{ name: 'Group F', value: 189 },
-	]
-};
+import mock from '../../mock/storage';
 
-const pie_charts = [data_one, data_two, data_three]
-
-// const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#00C49F', '#dddddd'];
 
 export default function Storage() {
-	return(
+	const default_table = {
+		header: [{ text: "S No." }, { text: "Energy Flow" }, { text: "Date/Time" }],
+		body: []
+	}
+
+	const [table_data, setTableData] = useState(default_table);
+	const [energy_flow_chart, setFlowChartData] = useState([]);
+	const [soc_chart_data, setSocChartData] = useState([]);
+
+	useEffect(() => {
+		fetchData()
+	})
+
+	const fetchData = () => {
+		const data = {
+			header: [{ text: "S No." }, { text: "Energy Flow" }, { text: "Date/Time" }],
+			body: storageTableResolver(mock)
+		}
+		setTableData(data);
+		setFlowChartData(energyFlowChartResolver(mock))
+		setSocChartData(socPieChartResolver(mock))
+	}
+
+	return (
 		<>
-			<h3 style={{marginBottom: "24px"}}>GENERATION</h3>
-			
-			<Row>
-				{pie_charts.map(chart => <>
-					<Col xs={12} md={4} style={{ width:"fit-content", margin:"auto", marginBottom: "24px",}}>
-						<div className="card-with-shadow">
-							<h6 style={{padding: "20px 33px 0px"}}> {chart.title} </h6>
-							<hr/>
-							<PieChart width={400} height={250}>
+			<h3 style={{ marginBottom: "24px" }}>STORAGE</h3>
+
+			<Row style={{ marginBottom: "36px", marginTop: "36px" }}>
+				<Col xs={12} md={8}>
+					<div className="card-with-shadow" style={{ width: "100%" }}>
+						<h6 style={{ padding: "20px 33px 0px" }}>Energy Flow Chart</h6>
+						<hr />
+						<div style={{ padding: "16px", width: "100%" }}>
+							<ResponsiveContainer width="100%" height={200}>
+								<AreaChart
+									data={energy_flow_chart}
+									margin={{
+										top: 5,
+										right: 30,
+										left: 20,
+										bottom: 5,
+									}}
+								>
+									<CartesianGrid strokeDasharray="3 3" />
+									<XAxis dataKey="timestamp" />
+									<YAxis />
+									<Tooltip />
+									<Legend />
+									<Area type="monotone" dataKey="energy_flow" stroke="#8884d8" fill="#8884d8" />
+								</AreaChart>
+							</ResponsiveContainer>
+						</div>
+					</div>
+				</Col>
+
+				<Col xs={12} md={4}>
+					<div className="card-with-shadow" style={{ width: "100%" }}>
+						<h6 style={{ padding: "20px 33px 0px" }}> SOC </h6>
+						<hr />
+						<ResponsiveContainer width="100%" height={200}>
+							<PieChart width={400} height={160} margin={{ top: 130 }}>
 								<Pie
 									dataKey="value"
 									startAngle={180}
 									endAngle={0}
-									data={chart.data}
+									data={soc_chart_data}
 									cx="50%"
 									cy="70%"
-									outerRadius={120}
+									outerRadius={150}
 									fill="#8884d8"
-									label
-								/>
+								>
+									{soc_chart_data.map((entry, index) => (
+										<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+									))}
+								</Pie>
 							</PieChart>
-						</div>
-					</Col>
-				</>)}
+						</ResponsiveContainer>
+						<h4 style={{ textAlign: "center" }}>
+							{ mock?.[0]?.SoC ? `${Math.ceil(Number(mock[0].SoC))}%` : "0%" }
+						</h4>
+					</div>
+				</Col>
 			</Row>
+
+			<div className="card-with-shadow" style={{ width: "100%", marginTop: "36px", padding: "16px 10px" }}>
+				<Table table_data={table_data} />
+			</div>
+
+
 		</>
 	)
 }
