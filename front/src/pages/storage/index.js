@@ -20,17 +20,17 @@ import Table from '../../components/table';
 import { storageTableResolver } from '../../resolvers/table';
 import energyFlowChartResolver from '../../resolvers/energy_flow_chart';
 import socPieChartResolver from '../../resolvers/soc_pie_chart';
-
-import mock from '../../mock/storage';
+import BACKEND_URL from '../../constants/backend_url';
 
 const COLORS = ['#00C49F', '#dddddd'];
 
 export default function Storage() {
 	const default_table = {
-		header: [{ text: "S No." }, { text: "Energy Flow" }, { text: "Date/Time" }],
+		header: [{ text: "S No." }, { text: "Energy Flow" }, {text: "State of Charge"}, { text: "Date/Time" }],
 		body: []
 	}
 
+	const [all_data, setAllData] = useState([]);
 	const [table_data, setTableData] = useState(default_table);
 	const [energy_flow_chart, setFlowChartData] = useState([]);
 	const [soc_chart_data, setSocChartData] = useState([]);
@@ -40,13 +40,21 @@ export default function Storage() {
 	})
 
 	const fetchData = () => {
-		const data = {
-			header: [{ text: "S No." }, { text: "Energy Flow" }, { text: "Date/Time" }],
-			body: storageTableResolver(mock)
-		}
-		setTableData(data);
-		setFlowChartData(energyFlowChartResolver(mock))
-		setSocChartData(socPieChartResolver(mock))
+		const url = `${BACKEND_URL}?api_key=0123456789gad&table_name=u1_generation`;
+		fetch(url).then((response) => response.json())
+			.then((json) => {
+				setAllData(json)
+				const data = {
+					header: [{ text: "S No." }, { text: "Energy Flow" }, {text: "State of Charge"}, { text: "Date/Time" }],
+					body: storageTableResolver(json)
+				}
+				setTableData(data);
+				setFlowChartData(energyFlowChartResolver(json))
+				setSocChartData(socPieChartResolver(json))
+			}).catch(error => {
+				console.log("ERROR==>", error);
+			})
+		
 	}
 
 	return (
@@ -104,7 +112,7 @@ export default function Storage() {
 							</PieChart>
 						</ResponsiveContainer>
 						<h4 style={{ textAlign: "center" }}>
-							{ mock?.[0]?.SoC ? `${Math.ceil(Number(mock[0].SoC))}%` : "0%" }
+							{ all_data?.[0]?.SoC ? `${Math.ceil(Number(all_data[0].SoC))}%` : "0%" }
 						</h4>
 					</div>
 				</Col>

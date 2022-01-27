@@ -21,6 +21,7 @@ export const storageTableResolver = (data_array) => {
 		let row_data = [
 			{text: i+1},
 			{text: item.Energy_Flow},
+			{text: item.SoC},
 			{text: item.Timestamp}
 		]
 		results.push(row_data);
